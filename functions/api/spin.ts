@@ -31,7 +31,7 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
   // 2) Identifier “client” : on utilise une empreinte simple
   // - cf-connecting-ip est fourni par Cloudflare
   // - pour une version plus “privacy”, on peut basculer vers un id en 
-localStorage (mais là tu as D1 déjà)
+// localStorage (mais là tu as D1 déjà)
   const ip =
     request.headers.get("cf-connecting-ip") ||
     request.headers.get("x-forwarded-for") ||
