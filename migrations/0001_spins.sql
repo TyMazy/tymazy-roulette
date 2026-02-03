@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS spins (
+  ip TEXT PRIMARY KEY,
+  last_ts INTEGER NOT NULL
+);
+

@@ -1,7 +1,39 @@
 <!doctype html>
-<html>
-  <body>
-    <h1>Ty Mazy – projet initial OK</h1>
-  </body>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ty Mazy – Roulette</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <main class="wrap">
+    <h1>🎰 Roulette Ty Mazy</h1>
+
+    <p class="hint">
+      Pour tourner, il faut d’abord laisser un avis Google (ou au moins 
+ouvrir la page d’avis), puis revenir ici.
+    </p>
+
+    <div class="actions">
+      <a class="btn" href="/api/review-url" target="_blank" 
+rel="noopener">
+        1) Laisser un avis Google
+      </a>
+      <button class="btn primary" id="spinBtn">
+        2) Tourner la roulette
+      </button>
+    </div>
+
+    <div class="wheel" aria-hidden="true">
+      <div class="pointer">▼</div>
+      <div class="disc" id="disc">TY MAZY</div>
+    </div>
+
+    <pre class="result" id="result">Résultat : —</pre>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
 </html>
 
