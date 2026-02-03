@@ -42,13 +42,11 @@ const cooldownHours = Number(env.COOLDOWN_HOURS || 24);
 const cooldownMs = cooldownHours * 60 * 60 * 1000;
 
 // Identifier le client via IP (option B)
-const ip =
   request.headers.get("cf-connecting-ip") ||
   request.headers.get("x-forwarded-for") ||
   "unknown";
 
-// Table D1 attendue : spins(ip TEXT PRIMARY KEY, last_ts INTEGER NOT 
-NULL)
+// Table D1 attendue : spins(ip TEXT PRIMARY KEY, last_ts INTEGER NOT NULL)
 // La table est créée via migration (étape 3)
 
 const row = await env.DB
