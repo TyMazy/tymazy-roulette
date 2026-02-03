@@ -42,7 +42,6 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
   const cooldownMs = cooldownHours * 60 * 60 * 1000;
 
   // Table D1 attendue : spins(ip TEXT PRIMARY KEY, last_ts INTEGER NOT 
-NULL)
   // On crée si besoin via migration (voir étape 3).
   const row = await env.DB.prepare("SELECT last_ts FROM spins WHERE ip = 
 ?")
