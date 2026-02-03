@@ -37,61 +37,38 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     request.headers.get("x-forwarded-for") ||
     "unknown";
 
-  // 3) Cooldown (24h)
-  const cooldownHours = Number(env.COOLDOWN_HOURS || 24);
-  const cooldownMs = cooldownHours * 60 * 60 * 1000;
+// 3) Cooldown (24h)
+const cooldownHours = Number(env.COOLDOWN_HOURS || 24);
+const cooldownMs = cooldownHours * 60 * 60 * 1000;
 
-  // Table D1 attendue : spins(ip TEXT PRIMARY KEY, last_ts INTEGER NOT 
-  // On crée si besoin via migration (voir étape 3).
+// Identifier le client via IP (option B)
+const ip =
+  request.headers.get("cf-connecting-ip") ||
+  request.headers.get("x-forwarded-for") ||
+  "unknown";
+
+// Table D1 attendue : spins(ip TEXT PRIMARY KEY, last_ts INTEGER NOT 
+NULL)
+// La table est créée via migration (étape 3)
+
 const row = await env.DB
   .prepare("SELECT last_ts FROM spins WHERE ip = ?")
   .bind(ip)
   .first<{ last_ts: number }>();
 
-    .bind(ip)
-    .first<{ last_ts: number }>();
+const now = Date.now();
 
-  const now = Date.now();
-  if (row?.last_ts) {
-    const elapsed = now - row.last_ts;
-    if (elapsed < cooldownMs) {
-      const remainingMs = cooldownMs - elapsed;
-      const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
-      return json({
-  ok: false,
-  error: `Cooldown actif. Reviens dans ~${remainingHours}h.`,
-});
-    }
+if (row?.last_ts) {
+  const elapsed = now - row.last_ts;
+
+  if (elapsed < cooldownMs) {
+    const remainingMs = cooldownMs - elapsed;
+    const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
+
+    return json({
+      ok: false,
+      error: `Cooldown actif. Reviens dans ${remainingHours}h.`,
+    });
   }
-
-  // 4) Tirage 5% / 95%
-  const isWin = Math.random() < 0.05;
-
-  // 5) Enregistrer le spin + supprimer le cookie review_ok (repassage 
-obligé par l’avis si on veut retenter)
-  await env.DB.prepare(
-    "INSERT INTO spins (ip, last_ts) VALUES (?, ?) ON CONFLICT(ip) DO 
-UPDATE SET last_ts=excluded.last_ts"
-  )
-    .bind(ip, now)
-    .run();
-
-  const headers = new Headers();
-  headers.set(
-    "Set-Cookie",
-    "review_ok=; Max-Age=0; Path=/; Secure; SameSite=Lax"
-  );
-
-  if (isWin) {
-    const prize = Math.random() < 0.5 ? "1 café" : "1 crêpe beurre sucre";
-    return json({ ok: true, result: "win", prize }, 200, headers);
-  }
-
-  return json(
-    { ok: true, result: "lose", message: env.NO_PRIZE_LABEL || "Merci ❤️ 
-Pas de gain cette fois." },
-    200,
-    headers
-  );
-};
+}
 
