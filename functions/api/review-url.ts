@@ -9,10 +9,7 @@ export const onRequestGet: PagesFunction = async ({ env }) => {
     status: 302,
     headers: {
       "Location": url,
-      "Set-Cookie": "review_ok=1; Max-Age=3600; Path=/; Secure; 
-SameSite=Lax"
+      "Set-Cookie": "review_ok=1; Max-Age=3600; Path=/; Secure; SameSite=Lax"
     }
   });
 };
-
-
