@@ -43,8 +43,11 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
 
   // Table D1 attendue : spins(ip TEXT PRIMARY KEY, last_ts INTEGER NOT 
   // On crée si besoin via migration (voir étape 3).
-  const row = await env.DB.prepare("SELECT last_ts FROM spins WHERE ip = 
-?")
+const row = await env.DB
+  .prepare("SELECT last_ts FROM spins WHERE ip = ?")
+  .bind(ip)
+  .first<{ last_ts: number }>();
+
     .bind(ip)
     .first<{ last_ts: number }>();
 
@@ -54,11 +57,10 @@ export const onRequestGet: PagesFunction = async ({ request, env }) => {
     if (elapsed < cooldownMs) {
       const remainingMs = cooldownMs - elapsed;
       const remainingHours = Math.ceil(remainingMs / (60 * 60 * 1000));
-      return json(
-        { ok: false, error: `Cooldown actif. Reviens dans 
-~${remainingHours}h.` },
-        429
-      );
+      return json({
+  ok: false,
+  error: `Cooldown actif. Reviens dans ~${remainingHours}h.`,
+});
     }
   }
 
