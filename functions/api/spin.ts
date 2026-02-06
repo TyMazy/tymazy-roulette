@@ -29,8 +29,7 @@ export const onRequest: PagesFunction = async ({ request, env }) => {
     const reviewOk = getCookie(request, "review_ok");
     if (reviewOk !== "1") {
       return json(
-        { ok: false, error: "Avis requis. Clique d’abord sur « Laisser un 
-avis Google »." },
+        { ok: false, error: "Avis requis. Clique d’abord sur « Laisser un avis Google »." },
         403
       );
     }
